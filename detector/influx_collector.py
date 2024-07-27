@@ -84,8 +84,6 @@ class InfluxCollector:
                 # Write the point to the database
                 self.client.write(point)
 
-                print("Written to InfluxDB")
-
             except queue.Empty:
                 # The queue is empty, continue the loop
                 continue

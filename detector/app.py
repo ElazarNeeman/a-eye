@@ -6,6 +6,7 @@ import cv2
 from detection_aggragate import DetectionAggregate
 from detection_alarm import DetectionAlarm
 from env import SECONDS_BETWEEN_DETECTIONS, STREAM_ID, QUIT_KEY
+from image_collector import ImageCollector
 from influx_collector import InfluxCollector
 from multi_frame_detector import MultiFrameDetector
 from video import VideoStream
@@ -37,9 +38,11 @@ async def main():
     detector = MultiFrameDetector()
     detection_aggregate = DetectionAggregate()
     influx = InfluxCollector()
+    image_collector = ImageCollector()
     alarm = DetectionAlarm()
     await alarm.start()
     video_stream.start()
+    image_collector.start()
 
     # processing frames in input stream
     num_frames_processed = 0
@@ -53,6 +56,7 @@ async def main():
         detector.process(frame)
         frame_time = detection_aggregate.add_frame(detector)
         influx.collect(detector)
+        image_collector.collect(detector)
         num_frames_processed += 1
 
         cv2.imshow('frame', frame)

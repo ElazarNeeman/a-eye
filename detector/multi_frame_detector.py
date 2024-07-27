@@ -82,7 +82,8 @@ class MultiFrameDetector(DetectorAbs):
                     'face': detected_face,
                     'person': img,
                     'emotion': dominant_emotion,
-                    'track_id': track_id
+                    'track_id': track_id,
+                    'identity': name
                 }
                 self.track_identities[track_id] = name
             else:
@@ -91,7 +92,8 @@ class MultiFrameDetector(DetectorAbs):
                     'face': detected_face,
                     'person': img,
                     'emotion': dominant_emotion,
-                    'track_id': track_id
+                    'track_id': track_id,
+                    'identity': 'unknown'
                 }
 
             print(name, " ", dominant_emotion)

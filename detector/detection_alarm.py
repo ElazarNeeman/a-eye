@@ -28,7 +28,7 @@ class DetectionAlarm:
         self.client = TelegramClient('new_session_name', TELEGRAM_API_ID, TELEGRAM_API_HASH)
         self.client.start()
 
-        @self.client.on(events.NewMessage)
+        @self.client.on(events.NewMessage(chats=TELEGRAM_CHANNEL_ID))
         async def on_message(event):
             print("!!! got ", event.raw_text)
             if 'hello' in event.raw_text:

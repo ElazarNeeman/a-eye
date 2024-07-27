@@ -1,0 +1,16 @@
+pillow==10.3.0
+Telethon==1.35.0 #telegram
+environs==11.0.0
+
+# database
+influxdb3-python==0.7.0
+pandas==2.2.2
+
+# gui
+dash==2.17.1
+kaleido==0.2.1
+schedule==1.2.2
+
+
+#pytest
+pytest==8.3.2

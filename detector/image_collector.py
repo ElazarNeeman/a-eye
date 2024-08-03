@@ -1,15 +1,17 @@
 import os
 import queue
+
 import schedule
 import threading
 import time
 
 import cv2
 
+from detections_collector import DetectionsCollector
 from detector import DetectorAbs
 
 
-class ImageCollector:
+class ImageCollector(DetectionsCollector):
     def __init__(self, folder_name: str = 'images'):
 
         # output folder name
@@ -21,10 +23,17 @@ class ImageCollector:
         # Start a new thread that runs the write_data method
         self.write_thread = threading.Thread(target=self.write_data)
 
+        self.stopped = True
+
     def start(self):
+        self.stopped = False
         self.create_daily_image_dir()
         schedule.every().day.at("00:00:00").do(self.create_daily_image_dir)
         self.write_thread.start()
+
+    def stop(self):
+        self.stopped = True
+        self.write_thread.join()
 
     def create_daily_image_dir(self):
         timestamp = time.time()
@@ -56,6 +65,10 @@ class ImageCollector:
 
     def write_data(self):
         while True:
+
+            if self.stopped:
+                break
+
             try:
                 # Get a point from the queue with a timeout
                 write_msg = self.queue.get(timeout=10)

@@ -1,16 +1,16 @@
 from influxdb_client_3 import InfluxDBClient3, Point, WriteOptions, write_client_options, InfluxDBError
 
+from detections_collector import DetectionsCollector
 from env import INFLUXDB_HOST, INFLUXDB_TOKEN, INFLUXDB_ORG, INFLUXDB_DB
 import time
 
 from multi_frame_detector import DetectorAbs
 
-
 import threading
 import queue
 
 
-class InfluxCollector:
+class InfluxCollector(DetectionsCollector):
     def __init__(self):
 
         # Instantiate WriteOptions for batching
@@ -31,7 +31,15 @@ class InfluxCollector:
 
         # Start a new thread that runs the write_data method
         self.write_thread = threading.Thread(target=self.write_data)
+        self.stopped = True
+
+    def start(self):
+        self.stopped = False
         self.write_thread.start()
+
+    def stop(self):
+        self.stopped = True
+        self.write_thread.join()
 
     def collect(self, detector: DetectorAbs):
 
@@ -39,8 +47,6 @@ class InfluxCollector:
 
             emotion = detector.detected_identities[key].get("emotion", None)
             tracking_id = detector.detected_identities[key]["track_id"]
-
-            # print("data:", key, tracking_id, emotion)
 
             name = key
             if key.startswith("unknown"):
@@ -76,7 +82,12 @@ class InfluxCollector:
         print(status)
 
     def write_data(self):
+
         while True:
+
+            if self.stopped:
+                break
+
             try:
                 # Get a point from the queue with a timeout
                 point = self.queue.get(timeout=1)

@@ -11,7 +11,9 @@ import queue
 
 
 class InfluxCollector(DetectionsCollector):
-    def __init__(self):
+    def __init__(self, camera_id: int = 0):
+
+        self.camera_id = camera_id
 
         # Instantiate WriteOptions for batching
         write_options = WriteOptions()
@@ -63,6 +65,7 @@ class InfluxCollector(DetectionsCollector):
             if emotion is not None:
                 point.tag("emotion", emotion)
 
+            point.tag("camera_id", self.camera_id)
             point.field("count", 1)
             point.time(time.time_ns())
 

@@ -12,7 +12,10 @@ from detector import DetectorAbs
 
 
 class ImageCollector(DetectionsCollector):
-    def __init__(self, folder_name: str = 'images'):
+    def __init__(self, camera_id: int = 0, folder_name: str = 'images'):
+
+        self.camera_id = camera_id
+        self.camera_str = "{:02}".format(camera_id)
 
         # output folder name
         self.folder_name = folder_name
@@ -85,7 +88,7 @@ class ImageCollector(DetectionsCollector):
                 minute = "{:02}".format(alarm_time.tm_min)
 
                 # os.makedirs(f'{self.folder_name}/{year}-{month}-{day}', exist_ok=True)
-                file_name = f'{self.folder_name}/{year}-{month}-{day}/{hour}-{minute}-{identity}.jpg'
+                file_name = f'{self.folder_name}/{year}-{month}-{day}/{hour}-{minute}-{identity}-{self.camera_str}.jpg'
 
                 # Save the image to a file
                 cv2.imwrite(file_name, img)

@@ -5,14 +5,13 @@ import time
 from telethon import TelegramClient, events
 
 from env import TELEGRAM_API_ID, TELEGRAM_API_HASH, TELEGRAM_CHANNEL_ID
-from influx_query import query_home_db
+from influx_query import query_home_db, query_who_at_home, format_query_query_who_at_home
 
 
 class TelegramBot:
 
     def __init__(self):
         self.client = None
-        self.alarm_time = {}
         self.alarm_queue = asyncio.Queue()
         self.alarm_thread = threading.Thread(target=self.__bot_thread, args=())
         self.alarm_thread.daemon = True
@@ -60,14 +59,13 @@ class TelegramBot:
     async def process_alarm(self, alarm_data):
         name = alarm_data['name']
         print(f"{time.ctime()} Raising alarm for {name}")
-        alarm_time = time.time()
-        file_name = alarm_data['file_name']
+        file_name = alarm_data.get('file_name', None)
 
         if self.client:
-            await self.client.send_file(TELEGRAM_CHANNEL_ID, file_name,
-                                        caption=f'Person {name} detected at {time.ctime()}')
-
-        self.alarm_time[name] = alarm_time
+            if file_name is None:
+                await self.client.send_message(TELEGRAM_CHANNEL_ID, alarm_data["message"])
+            else:
+                await self.client.send_file(TELEGRAM_CHANNEL_ID, file_name, caption= alarm_data["message"])
 
     async def raise_alarm(self, alarm_data):
         await self.alarm_queue.put(alarm_data)
@@ -76,8 +74,11 @@ class TelegramBot:
         self.alarm_queue.put((None, None))
         self.alarm_thread.join()
 
-    async def __reply_who(self, _):
-        await self.client.send_message(TELEGRAM_CHANNEL_ID, message="People in house: ")
+    async def __reply_who(self, event):
+        interval = '6 hours'
+        data = query_who_at_home(interval)
+        msg = format_query_query_who_at_home(data)
+        await event.reply(f"People in house last {interval}:\n" + msg)
 
     async def __send_stats(self, _):
         try:
@@ -85,5 +86,3 @@ class TelegramBot:
             await self.client.send_file(TELEGRAM_CHANNEL_ID, file_name, caption="People in last 12 hours")
         except Exception as e:
             print(e)
-
-

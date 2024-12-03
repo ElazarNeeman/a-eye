@@ -5,7 +5,7 @@ import cv2
 
 from env import get_stream_id, QUIT_KEY, CAMERA_COUNT
 from image_collector import ImageCollector
-from influx_collector import InfluxCollector
+from influx_collector import get_influx_collector
 from multi_frame_detector import MultiFrameDetector
 from video import VideoStream
 
@@ -14,11 +14,11 @@ async def main(camera_id: int):
     window_name = f'Camera {camera_id}'
 
     video_stream = VideoStream(stream_id=get_stream_id(camera_id))  # stream_id = 0 is for primary camera
-    # video_stream = VideoStream(stream_id=1)  # stream_id = 0 is for primary camera
+    # video_stream = VideoStream(stream_id=0)  # stream_id = 0 is for primary camera
     # detector = SingleFrameDetector()
     detector = MultiFrameDetector()
 
-    detections_collectors = [InfluxCollector(camera_id), ImageCollector(camera_id)]
+    detections_collectors = [get_influx_collector(camera_id), ImageCollector(camera_id)]
 
     video_stream.start()
 

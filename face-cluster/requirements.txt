@@ -1,0 +1,8 @@
+streamlit
+streamlit-ext
+opencv-python
+scikit-learn
+imutils
+deepface==0.0.91
+tf_keras==2.16.0
+face-recognition==1.3.0

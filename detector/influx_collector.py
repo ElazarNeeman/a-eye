@@ -9,6 +9,18 @@ from multi_frame_detector import DetectorAbs
 import threading
 import queue
 
+from null_collector import NullCollector
+
+
+def get_influx_collector(camera_id: int = 0):
+    if INFLUXDB_HOST is not None and \
+            INFLUXDB_TOKEN is not None and \
+            INFLUXDB_ORG is not None and \
+            INFLUXDB_DB is not None:
+        return InfluxCollector(camera_id)
+
+    return NullCollector()
+
 
 class InfluxCollector(DetectionsCollector):
     def __init__(self, camera_id: int = 0):

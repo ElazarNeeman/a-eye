@@ -7,11 +7,19 @@ env.read_env()
 QUIT_KEY = ord('q')
 
 # Influx db
-INFLUXDB_TOKEN = env("INFLUXDB_TOKEN")
-INFLUXDB_HOST = env("INFLUXDB_HOST")
-INFLUXDB_ORG = env("INFLUXDB_ORG")
-INFLUXDB_DB = env("INFLUXDB_DB")
+INFLUXDB_TOKEN = env("INFLUXDB_TOKEN", None)
+INFLUXDB_HOST = env("INFLUXDB_HOST", None)
+INFLUXDB_ORG = env("INFLUXDB_ORG", None)
+INFLUXDB_DB = env("INFLUXDB_DB", None)
 CAMERA_COUNT = env.int("CAMERA_COUNT")
+DB_PATH = env("DB_PATH", "family")
+
 
 def get_stream_id(camera_id: int):
-    return env(f"STREAM_ID_{camera_id}")
+    stream_id = env(f"STREAM_ID_{camera_id}")
+
+    if stream_id.isdigit():
+        # web-cam case
+        return int(stream_id)
+
+    return stream_id

@@ -59,7 +59,7 @@ class MultiFrameDetector(DetectorAbs):
         # person_img = img[y:y + h, x:x + w]
         if name is not None:
             cv2.putText(img, f"{name} ({track_id})", (x + 5, y - 5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1,
-                        (255, 255, 255), 2)
+                        (255, 0, 0), 2)
 
             self.detected_identities[name] = {
                 'person': img,
@@ -101,7 +101,7 @@ class MultiFrameDetector(DetectorAbs):
         if self.track_identities.get(track_id, None) is None:
             name = f"unknown {track_id}"
             cv2.putText(img, f"{name}", (x + 5, y - 5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1,
-                        (255, 255, 255), 2)
+                        (255, 0, 0), 2)
             self.detected_identities[name] = {
                 'person': img,
                 'track_id': track_id

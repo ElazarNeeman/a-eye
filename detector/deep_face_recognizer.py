@@ -4,10 +4,12 @@ from typing import List
 import pandas as pd
 from deepface import DeepFace
 
+from env import DB_PATH
+
 
 class DeepFaceRecognizer:
 
-    def __init__(self, db_path="family"):
+    def __init__(self, db_path=DB_PATH):
         self.db_path = db_path
 
     @staticmethod
